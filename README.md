@@ -9,7 +9,11 @@ You will need to set the following environment variables
     export LF_CDN_S3_KEY='...'
     export LF_CDN_S3_SECRET='...'
 
-Install with npm. It will add `lfcdn` to your PATH.
+Install with npm.
+
+    npm install -g git+ssh://git@github.com:Livefyre/lfcdn
+
+Note the `-g`. It will add `lfcdn` to your PATH.
 
 ## `lfcdn -h`
 
