@@ -1,6 +1,6 @@
 {
   "name": "lf-cdn",
-  "version": "0.0.0",
+  "version": "0.0.0+build.1.1w.e",
   "description": "",
   "main": "index.js",
   "bin": {
@@ -15,6 +15,7 @@
     "gulp-awspublish": "0.0.13",
     "gulp": "^3.6.1",
     "gulp-rename": "^1.2.0",
-    "minimist": "0.0.8"
+    "minimist": "0.0.8",
+    "semver": "^2.2.1"
   }
 }

@@ -4,6 +4,7 @@
 // By looking in the package.json
 var fs = require('fs');
 var path = require('path');
+var semver = require('semver');
 var gulp = require('gulp');
 var rename = require('gulp-rename');
 var awspublish = require('gulp-awspublish');
@@ -62,7 +63,13 @@ var headers = {
     'Cache-Control': 'max-age=315360000, no-transform, public'
 };
 
-var s3path = ['/libs', name, version].join('/');
+// S3 doesn't like `+` in it's keys, so we'll convert
+// semvers with build fragments to /{version}/builds/{build}
+var packageSemver = semver(version);
+var s3path = ['/libs', name, packageSemver.version].join('/');
+if (packageSemver.build) {
+    s3path += '/builds/' + packageSemver.build.join('.');
+}
 
 gulp.src('./dist/*')
     .pipe(rename(function (path) {
