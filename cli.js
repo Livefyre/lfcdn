@@ -67,7 +67,7 @@ var headers = {
 // semvers with build fragments to /{version}/builds/{build}
 var packageSemver = semver(version);
 var s3path = ['/libs', name, packageSemver.version].join('/');
-if (packageSemver.build) {
+if (packageSemver.build.length) {
     s3path += '/builds/' + packageSemver.build.join('.');
 }
 
