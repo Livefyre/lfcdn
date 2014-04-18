@@ -1,4 +1,4 @@
-# lf-cdn
+# lfcdn
 
 Deploy your `./dist/` directory to the Livefyre CDN.
 

@@ -1,6 +1,6 @@
 {
-  "name": "lf-cdn",
-  "version": "0.0.0+build.1.1w.e",
+  "name": "lfcdn",
+  "version": "0.0.0-pre0+build.1.1w.e",
   "description": "",
   "main": "index.js",
   "bin": {
