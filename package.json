@@ -1,0 +1,20 @@
+{
+  "name": "lf-cdn",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "bin": {
+    "lfcdn": "./cli.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "gulp-awspublish": "0.0.13",
+    "gulp": "^3.6.1",
+    "gulp-rename": "^1.2.0",
+    "minimist": "0.0.8"
+  }
+}
