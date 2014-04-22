@@ -9,7 +9,7 @@ var gulp = require('gulp');
 var rename = require('gulp-rename');
 var awspublish = require('gulp-awspublish');
 
-var s3key = process.env.LF_CDN_S3_KEY;
+var s3key = process.env.LF_CDN_S3_KEYY;
 var s3secret = process.env.LF_CDN_S3_SECRET;
 
 var argv = require('minimist')(process.argv.slice(2));
@@ -26,7 +26,7 @@ if (argv.h) {
 
 if ( ! (s3key && s3secret)) {
     console.log("Set LF_CDN_S3_KEY and LF_CDN_S3_SECRET");
-    process.exit();
+    process.exit(1);
 }
 
 var config = {};
@@ -42,13 +42,13 @@ var version = packageJson.version;
 
 if ( ! (name && version)) {
     console.log("Couldn't parse name and version from package.json");
-    process.exit();
+    process.exit(1);
 }
 
 var env = argv.e || 'dev';
 if (['dev', 'qa', 'staging', 'prod'].indexOf(env) === -1) {
     usage();
-    process.exit();
+    process.exit(1);
 }
 
 if (env === 'prod') {
