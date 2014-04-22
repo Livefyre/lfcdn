@@ -94,9 +94,6 @@ gulp.src('./dist/*')
     // If not specified it will set x-amz-acl to public-read by default
     .pipe(publisher.publish(headers))
 
-    // create a cache file to speed up consecutive uploads
-    .pipe(publisher.cache()) 
-
      // print upload updates to console 
     .pipe(awspublish.reporter());
 
