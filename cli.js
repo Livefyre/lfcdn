@@ -15,7 +15,7 @@ var s3secret = process.env.LF_CDN_S3_SECRET;
 var argv = require('minimist')(process.argv.slice(2));
 
 function usage() {
-    console.log('Usage: lfcdn {dev|qa|staging|prod}');
+    console.log('Usage: lfcdn -e {dev|qa|staging|prod} -c [/path/to/config.json]');
 }
 
 // -h help
@@ -29,6 +29,12 @@ if ( ! (s3key && s3secret)) {
     process.exit();
 }
 
+var config = {};
+var configPath = argv.c;
+if (configPath) {
+    config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+}
+
 var packageJsonPath = path.join(process.cwd(), 'package.json');
 var packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
 var name = packageJson.name;
@@ -39,7 +45,7 @@ if ( ! (name && version)) {
     process.exit();
 }
 
-var env = argv._[0] || 'dev';
+var env = argv.e || 'dev';
 if (['dev', 'qa', 'staging', 'prod'].indexOf(env) === -1) {
     usage();
     process.exit();
@@ -56,24 +62,29 @@ console.log(s3bucket+": deploying "+name);
 var publisher = awspublish.create({
     key: s3key,
     secret: s3secret,
-    bucket: 'livefyre-cdn-dev'
+    bucket: s3bucket
 });
 
 var headers = { 
     'Cache-Control': 'max-age=315360000, no-transform, public'
 };
 
-// S3 doesn't like `+` in it's keys, so we'll convert
-// semvers with build fragments to /{version}/builds/{build}
-var packageSemver = semver(version);
-var s3path = ['/libs', name, packageSemver.version].join('/');
-if (packageSemver.build.length) {
-    s3path += '/builds/' + packageSemver.build.join('.');
+console.log("config:", config);
+
+if ( ! config.dir) {
+    // S3 doesn't like `+` in it's keys, so we'll convert
+    // semvers with build fragments to /{version}/builds/{build}
+    var packageSemver = semver(version);
+    var s3path = ['/libs', name, packageSemver.version].join('/');
+    if (packageSemver.build.length) {
+        s3path += '/builds/' + packageSemver.build.join('.');
+    }
+    config.dir = s3path;
 }
 
 gulp.src('./dist/*')
     .pipe(rename(function (path) {
-        path.dirname += s3path;
+        path.dirname += config.dir;
     }))
 
      // gzip, Set Content-Encoding headers

@@ -17,11 +17,17 @@ Note the `-g`. It will add `lfcdn` to your PATH.
 
 ## `lfcdn -h`
 
-    Usage: lfcdn {dev|qa|staging|prod}
+    Usage: lfcdn -e {dev|qa|staging|prod} -c [/path/to/config.json]
 
-## `lfcdn {dev|qa|staging|prod}`
+## `lfcdn -c [/path/to/config.json]`
 
-Positional arg defaults to 'dev'.
+Load config from a JSON config file. Supported config options:
+
+* `dir` - S3 key to deploy files to. Defaults to a path derrived from the `name` in `package.json`
+
+## `lfcdn -e {dev|qa|staging|prod}`
+
+Environment to deploy to. Defaults to `dev`.
 
     livefyre-cdn-dev: deploying streamhub-sdk
     [gulp] [cache]  libs/streamhub-sdk/2.7.5/streamhub-sdk.min.css
