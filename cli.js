@@ -9,7 +9,7 @@ var gulp = require('gulp');
 var rename = require('gulp-rename');
 var awspublish = require('gulp-awspublish');
 
-var s3key = process.env.LF_CDN_S3_KEYY;
+var s3key = process.env.LF_CDN_S3_KEY;
 var s3secret = process.env.LF_CDN_S3_SECRET;
 
 var argv = require('minimist')(process.argv.slice(2));
