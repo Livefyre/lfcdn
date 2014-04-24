@@ -16,6 +16,7 @@
     "gulp": "^3.6.1",
     "gulp-rename": "^1.2.0",
     "minimist": "0.0.8",
-    "semver": "^2.2.1"
+    "semver": "^2.2.1",
+    "aws-sdk": "^2.0.0-rc13"
   }
 }

@@ -2,6 +2,7 @@
 
 // Figure out this package's name
 // By looking in the package.json
+var AWS = require('aws-sdk');
 var fs = require('fs');
 var path = require('path');
 var semver = require('semver');
@@ -29,6 +30,13 @@ if ( ! (s3key && s3secret)) {
     process.exit(1);
 }
 
+AWS.config = new AWS.Config({
+    accessKeyId: s3key,
+    secretAccessKey: s3secret,
+    region: 'us-east-1'
+});
+var s3 = new AWS.S3();
+
 var config = {};
 var configPath = argv.c;
 if (configPath) {
@@ -37,8 +45,8 @@ if (configPath) {
 
 var packageJsonPath = path.join(process.cwd(), 'package.json');
 var packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
-var name = packageJson.name;
-var version = packageJson.version;
+var name = 'streamhub-map' || packageJson.name;
+var version = 'v1.2.1' || packageJson.version;
 
 if ( ! (name && version)) {
     console.log("Couldn't parse name and version from package.json");
@@ -57,24 +65,12 @@ if (env === 'prod') {
     s3bucket = 'livefyre-cdn-'+env;
 }
 
-console.log(s3bucket+": deploying "+name);
-
-var publisher = awspublish.create({
-    key: s3key,
-    secret: s3secret,
-    bucket: s3bucket
-});
-
-var headers = { 
-    'Cache-Control': 'max-age=315360000, no-transform, public'
-};
-
-console.log("config:", config);
+var packageSemver = semver(version);
+if (!packageSemver.raw.indexOf('v') === 0) packageSemver.raw = 'v' + packageSemver.raw;
 
 if ( ! config.dir) {
     // S3 doesn't like `+` in it's keys, so we'll convert
     // semvers with build fragments to /{version}/builds/{build}
-    var packageSemver = semver(version);
     var s3path = ['/libs', name, packageSemver.version].join('/');
     if (packageSemver.build.length) {
         s3path += '/builds/' + packageSemver.build.join('.');
@@ -82,18 +78,95 @@ if ( ! config.dir) {
     config.dir = s3path;
 }
 
-gulp.src('./dist/*')
-    .pipe(rename(function (path) {
-        path.dirname += config.dir;
-    }))
+s3.listObjects({ Bucket: s3bucket } , function (err, data) {
+    if (err) console.log(err) && process.exit(0);
+    var contents = data.Contents;
+    var exisiting;
+    var pathFan = {};
 
-     // gzip, Set Content-Encoding headers
-    .pipe(awspublish.gzip()) 
+    function createPathFan(path) {
+        var deployedVersion;
+        var nameIndex;
+        var versionIndex;
 
-    // publisher will add Content-Length, Content-Type and  headers specified above
-    // If not specified it will set x-amz-acl to public-read by default
-    .pipe(publisher.publish(headers))
+        nameIndex = path.indexOf(name)
+        if (nameIndex > -1) {
+            exisiting = true;
+            // assuming that the version follows the name, conventionally enforced.
+            versionIndex = [nameIndex + 1]
+            deployedVersion = path[versionIndex]
+            if (!semver.valid(deployedVersion)) return;
+            deployedVersion = semver(deployedVersion);
 
-     // print upload updates to console 
-    .pipe(awspublish.reporter());
+            // a little verbose, checking to see what versions we should deploy and building the version strings.
+            if (packageSemver.major >= deployedVersion.major) {
+                pathFan.major = path.slice(0, -1);
+                pathFan.major[versionIndex] = packageSemver.raw.split('.')[0];
+                pathFan.major = pathFan.major.join('/');
+            }
 
+            if ((packageSemver.major === deployedVersion.major) && packageSemver.minor >= deployedVersion.minor) {
+                pathFan.minor = path.slice(0, -1);
+                pathFan.minor[versionIndex] = packageSemver.raw.split('.').slice(0, -1).join('.');
+                pathFan.minor = pathFan.minor.join('/');
+            }
+
+            if ((packageSemver.major === deployedVersion.major) && (packageSemver.minor === deployedVersion.minor) && packageSemver.patch >= deployedVersion.patch) {
+                pathFan.patch = path.slice(0, -1);
+                pathFan.patch[versionIndex] = packageSemver.raw;
+                pathFan.patch = pathFan.patch.join('/');
+            }
+        }
+    }
+
+    for (var i = contents.length - 1; i >= 0; i--) {
+        createPathFan(contents[i].Key.split('/'));
+    }
+
+    if (!exisiting) {
+        console.log('no exisiting versions found in deployment');
+        createPathFan(config.dir.split('/'));
+    }
+
+    deployPaths(pathFan);
+});
+
+var headers = {
+    'Cache-Control': 'max-age=315360000, no-transform, public'
+};
+
+var publisher = awspublish.create({
+    key: s3key,
+    secret: s3secret,
+    bucket: s3bucket
+});
+
+function deployPaths(pathFan) {
+    var versions = Object.keys(pathFan);
+    console.log(pathFan);
+
+    versions.forEach(function(val, i) {
+        var s3path = pathFan[versions[i]];
+        gulp.src('./dist/*')
+            .pipe(rename(function (path) {
+                path = [s3path, path.dirname, path.basename + path.extname].join('/');
+                // mrr
+                // libs/apps/cheung31/streamhub-map/v1.2/./test.css
+                console.log(path)
+            }))
+
+             // gzip, Set Content-Encoding headers
+            // .pipe(awspublish.gzip())
+
+            // // publisher will add Content-Length, Content-Type and  headers specified above
+            // // If not specified it will set x-amz-acl to public-read by default
+            // .pipe(publisher.publish(headers))
+
+            //  // print upload updates to console
+            // .pipe(awspublish.reporter());
+    });
+}
+
+
+console.log("config:", config);
+console.log(s3bucket+": deploying "+name);
