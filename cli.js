@@ -24,6 +24,11 @@ if (argv.h) {
     process.exit();
 }
 
+var versionScope = null;
+if (argv.scope) {
+    versionScope = argv.scope;
+}
+
 if ( ! (s3key && s3secret)) {
     console.log("Set LF_CDN_S3_KEY and LF_CDN_S3_SECRET");
     process.exit(1);
@@ -94,6 +99,7 @@ function ensureFullFan(configPath) {
 
 function addVersionPath(version, keyIndex, basePath) {
     var s3path = basePath.slice(0);
+    if (versionScope && version !== versionScope) return;
     s3path[basePath.indexOf(name) + 1] = versionString.split('.').slice(0, keyIndex + 1).join('.');
     pathFan[version] = s3path;
 }
@@ -112,6 +118,7 @@ function deployPaths(pathFan) {
     console.log(s3bucket+": deploying "+name);
     Object.keys(pathFan).forEach(function(val, i) {
         var s3path = pathFan[val];
+        if (!s3path) return;
         gulp.src('./dist/*')
             .pipe(rename(function (path) {
                 path.dirname += s3path.join('/');

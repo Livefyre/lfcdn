@@ -27,6 +27,14 @@ Load config from a JSON config file. Supported config options:
 
 ## `lfcdn -e {dev|qa|staging|prod}`
 
+By default the project will be deployed to three locations, for a major, minor, and patch distribution.
+If you want to deploy only one version withoug affecting the others, this is possible with the `scope`
+option.
+
+## `lfcdn --scope {major|minor|patch}`
+
+
+
 Environment to deploy to. Defaults to `dev`.
 
     livefyre-cdn-dev: deploying streamhub-sdk
