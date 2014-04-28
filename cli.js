@@ -15,7 +15,7 @@ var s3secret = process.env.LF_CDN_S3_SECRET;
 var argv = require('minimist')(process.argv.slice(2));
 
 function usage() {
-    console.log('Usage: lfcdn -e {dev|qa|staging|prod} -c [/path/to/config.json]');
+    console.log('Usage: lfcdn -e {dev|qa|staging|prod} -c /path/to/config.json --scope {major|minor|patch}');
 }
 
 // -h help
