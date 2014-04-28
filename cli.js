@@ -84,19 +84,31 @@ if ( ! config.dir) {
     })();
 }
 
-var pathFan = {
-    major: '',
-    minor: '',
-    patch: ''
+var pathKeys = ['major', 'minor', 'patch'];
+var pathFan = {};
+for (var i = 0; i < pathKeys.length; i++) {
+    pathFan[pathKeys[i]] = '';
 }
 
+/**
+ * Ensure that the dist is deployed as a major, minor, and patch version.
+ * e.g., v1/stuff, v1.0/stuff, and v1.0.0/stuff
+ * @param {string} configPath
+ */
 function ensureFullFan(configPath) {
     console.log("path:", configPath);
-    Object.keys(pathFan).forEach(function(val, i) {
+    pathKeys.forEach(function(val, i) {
         addVersionPath(val, i, configPath.split('/'));
     });
 }
 
+/**
+ * Add each verion scope to the paths that will be deployed.
+ * If the --scope option has been provided, only the specified scope will be provided
+ * @param {string} version The scope e.g. 'major'
+ * @param {number} keyIndex The index of the scope e.g. 'major' === 0
+ * @param {Array} basePath The base s3 path that the version scope will be added to. e.g. /project/<version>/stuff
+ */
 function addVersionPath(version, keyIndex, basePath) {
     var s3path = basePath.slice(0);
     if (versionScope && version !== versionScope) return;
@@ -114,6 +126,7 @@ var publisher = awspublish.create({
     bucket: s3bucket
 });
 
+// Push the dist to s3
 function deployPaths(pathFan) {
     console.log(s3bucket+": deploying "+name);
     Object.keys(pathFan).forEach(function(val, i) {
