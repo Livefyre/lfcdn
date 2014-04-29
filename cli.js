@@ -134,7 +134,7 @@ function deployPaths(pathFan) {
         if (!s3path) return;
         gulp.src('./dist/*')
             .pipe(rename(function (path) {
-                path.dirname += s3path.join('/');
+                path.dirname += '/' + s3path.join('/');
             }))
 
              // gzip, Set Content-Encoding headers
