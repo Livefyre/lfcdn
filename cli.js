@@ -15,7 +15,7 @@ var s3secret = process.env.LF_CDN_S3_SECRET;
 var argv = require('minimist')(process.argv.slice(2));
 
 function usage() {
-    console.log('Usage: lfcdn -e {dev|qa|staging|prod} -c /path/to/config.json --scope {major|minor|patch}');
+    console.log('Usage: lfcdn -e {dev|qa|staging|prod} -c /path/to/config.json');
 }
 
 // -h help
@@ -24,9 +24,10 @@ if (argv.h) {
     process.exit();
 }
 
-var versionScope = null;
-if (argv.scope) {
-    versionScope = argv.scope;
+// TODO(jj): remove this option?
+var fanout = false;
+if (argv.fanout) {
+    fanout = true;
 }
 
 if ( ! (s3key && s3secret)) {
@@ -111,9 +112,10 @@ function ensureFullFan(configPath) {
  */
 function addVersionPath(version, keyIndex, basePath) {
     var s3path = basePath.slice(0);
-    if (versionScope && version !== versionScope) return;
-    s3path[basePath.indexOf(name) + 1] = versionString.split('.').slice(0, keyIndex + 1).join('.');
-    pathFan[version] = s3path;
+    if (version === 'patch' || fanout) {
+        s3path[basePath.indexOf(name) + 1] = versionString.split('.').slice(0, keyIndex + 1).join('.');
+        pathFan[version] = s3path;
+    }
 }
 
 var headers = {

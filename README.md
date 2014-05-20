@@ -29,11 +29,11 @@ Load config from a JSON config file. Supported config options:
 
 Environment to deploy to. Defaults to `dev`.
 
-## `lfcdn --scope {major|minor|patch}`
+## `lfcdn --fanout`
 
-By default the project will be deployed to three locations, for a major, minor, and patch distribution.
-If you want to deploy only one version withoug affecting the others, this is possible with the `scope`
-option.
+By default the project will be deployed to `/libs/{dir}/{version}\dist-filez` where the version is the full (patch) semver.
+
+The `--fanout` option will deploy a major, minor, and patch version in the wild.
 
 ## output
 
