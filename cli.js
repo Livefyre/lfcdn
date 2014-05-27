@@ -82,7 +82,7 @@ if ( ! config.dir) {
     // S3 doesn't like `+` in it's keys, so we'll convert
     // semvers with build fragments to /{version}/builds/{build}
     var packageSemver = semver(version);
-    var s3path = ['/libs', name, packageSemver.version].join('/');
+    var s3path = ['/libs', name, 'v' + packageSemver.version].join('/');
     if (packageSemver.build.length) {
         s3path += '/builds/' + packageSemver.build.join('.');
     }
