@@ -25,9 +25,6 @@ if (argv.h) {
 }
 
 var maxage = '315360000';
-if (argv.maxage) {
-    maxage = argv.maxage;
-}
 
 if ( ! (s3key && s3secret)) {
     console.log("Set LF_CDN_S3_KEY and LF_CDN_S3_SECRET");
@@ -38,6 +35,10 @@ var config = {};
 var configPath = argv.c;
 if (configPath) {
     config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+}
+
+if (argv.maxage || config.maxage) {
+    maxage = argv.maxage || config.maxage;
 }
 
 var packageJsonPath = path.join(process.cwd(), 'package.json');
