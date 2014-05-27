@@ -29,14 +29,6 @@ Load config from a JSON config file. Supported config options:
 
 Environment to deploy to. Defaults to `dev`.
 
-## `lfcdn --fanout`
-
-By default the project will be deployed to `/libs/{dir}/{version}\dist-filez` where the version is the full (patch) semver.
-
-The `--fanout` option will deploy a major, minor, and patch version in the wild.
-
-## output
-
     livefyre-cdn-dev: deploying streamhub-sdk
     [gulp] [cache]  libs/streamhub-sdk/2.7.5/streamhub-sdk.min.css
     [gulp] [cache]  libs/streamhub-sdk/2.7.5/streamhub-sdk.min.js
