@@ -12,7 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "gulp-awspublish": "0.0.13",
+    "gulp-awspublish": "0.0.16",
     "gulp": "^3.6.1",
     "gulp-rename": "^1.2.0",
     "minimist": "0.0.8",
