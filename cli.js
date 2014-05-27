@@ -24,6 +24,11 @@ if (argv.h) {
     process.exit();
 }
 
+var maxage = '315360000';
+if (argv.maxage) {
+    maxage = argv.maxage;
+}
+
 if ( ! (s3key && s3secret)) {
     console.log("Set LF_CDN_S3_KEY and LF_CDN_S3_SECRET");
     process.exit(1);
@@ -65,11 +70,12 @@ var publisher = awspublish.create({
     bucket: s3bucket
 });
 
-var headers = { 
-    'Cache-Control': 'max-age=315360000, no-transform, public'
+var headers = {
+    'Cache-Control': 'max-age={{maxage}}, no-transform, public'.replace('{{maxage}}', maxage)
 };
 
-console.log("config:", config);
+console.log('config:', config);
+console.log('headers:', headers);
 
 if ( ! config.dir) {
     // S3 doesn't like `+` in it's keys, so we'll convert
@@ -88,12 +94,12 @@ gulp.src('./dist/*')
     }))
 
      // gzip, Set Content-Encoding headers
-    .pipe(awspublish.gzip()) 
+    .pipe(awspublish.gzip())
 
     // publisher will add Content-Length, Content-Type and  headers specified above
     // If not specified it will set x-amz-acl to public-read by default
     .pipe(publisher.publish(headers))
 
-     // print upload updates to console 
+     // print upload updates to console
     .pipe(awspublish.reporter());
 
