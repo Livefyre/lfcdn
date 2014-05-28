@@ -25,6 +25,7 @@ if (argv.h) {
 }
 
 var maxage = '315360000';
+var build = false;
 
 if ( ! (s3key && s3secret)) {
     console.log("Set LF_CDN_S3_KEY and LF_CDN_S3_SECRET");
@@ -41,10 +42,19 @@ if (argv.maxage || config.maxage) {
     maxage = argv.maxage || config.maxage;
 }
 
+
 var packageJsonPath = path.join(process.cwd(), 'package.json');
 var packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
 var name = packageJson.name;
 var version = packageJson.version;
+
+if (argv.build || config.build) {
+    build = (argv.build || config.build) + '';
+    if (build.indexOf('+') !== 0) {
+        build = '+' + build;
+    }
+    version += build;
+}
 
 if ( ! (name && version)) {
     console.log("Couldn't parse name and version from package.json");
