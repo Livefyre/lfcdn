@@ -103,22 +103,26 @@ if ( ! config.dir) {
     config.dir = s3path;
 }
 
+function logError(e) {
+    console.log(e.message);
+}
+
 gulp.src('./dist/**/*')
+    .on('error', logError)
     .pipe(rename(function (path) {
         path.dirname = config.dir + '/' + path.dirname;
     }))
+    .on('error', logError)
 
      // gzip, Set Content-Encoding headers
     .pipe(awspublish.gzip())
+    .on('error', logError)
 
     // publisher will add Content-Length, Content-Type and  headers specified above
     // If not specified it will set x-amz-acl to public-read by default
     .pipe(publisher.publish(headers))
+    .on('error', logError)
 
      // print upload updates to console
     .pipe(awspublish.reporter())
-
-    // display any errors
-    .on('error', function(e) {
-        console.log(e.message);
-    });
+    .on('error', logError);
