@@ -116,4 +116,9 @@ gulp.src('./dist/**/*')
     .pipe(publisher.publish(headers))
 
      // print upload updates to console
-    .pipe(awspublish.reporter());
+    .pipe(awspublish.reporter())
+
+    // display any errors
+    .on('error', function(e) {
+        console.log(e.message);
+    });
