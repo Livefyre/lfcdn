@@ -56,6 +56,10 @@ if (argv.build || config.build) {
     version += build;
 }
 
+if (argv.name || config.name) {
+    name = argv.name || config.name;
+}
+
 if ( ! (name && version)) {
     console.log("Couldn't parse name and version from package.json");
     process.exit(1);
