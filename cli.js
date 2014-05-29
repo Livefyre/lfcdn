@@ -99,9 +99,9 @@ if ( ! config.dir) {
     config.dir = s3path;
 }
 
-gulp.src('./dist/*')
+gulp.src('./dist/**/*')
     .pipe(rename(function (path) {
-        path.dirname += config.dir;
+        path.dirname = config.dir + '/' + path.dirname;
     }))
 
      // gzip, Set Content-Encoding headers
@@ -113,4 +113,3 @@ gulp.src('./dist/*')
 
      // print upload updates to console
     .pipe(awspublish.reporter());
-
