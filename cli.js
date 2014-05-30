@@ -109,6 +109,7 @@ function logError(e) {
 
 gulp.src('./dist/**/*')
     .on('error', logError)
+
     .pipe(rename(function (path) {
         path.dirname = config.dir + '/' + path.dirname;
     }))
@@ -126,3 +127,6 @@ gulp.src('./dist/**/*')
      // print upload updates to console
     .pipe(awspublish.reporter())
     .on('error', logError);
+
+// JJ: I am really sorry about this, but there is a rogue TCP error and I don't care where it is
+process.on('uncaughtException', logError);
