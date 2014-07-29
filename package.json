@@ -1,6 +1,6 @@
 {
   "name": "lfcdn",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "description": "",
   "main": "index.js",
   "bin": {
@@ -12,8 +12,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "gulp-awspublish": "0.0.16",
     "gulp": "^3.6.1",
+    "gulp-awspublish": "git://github.com/zjjw/gulp-awspublish#create_only",
     "gulp-rename": "^1.2.0",
     "minimist": "0.0.8",
     "semver": "^2.2.1"

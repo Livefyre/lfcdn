@@ -33,3 +33,7 @@ Environment to deploy to. Defaults to `dev`.
     [gulp] [cache]  libs/streamhub-sdk/2.7.5/streamhub-sdk.min.css
     [gulp] [cache]  libs/streamhub-sdk/2.7.5/streamhub-sdk.min.js
     [gulp] [cache]  libs/streamhub-sdk/2.7.5/streamhub-sdk.min.js.map
+
+## `lfcdn -f`
+
+By default lfcdn will not update published files. One can, however, overwrite published files with the force option.

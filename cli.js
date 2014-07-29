@@ -42,6 +42,10 @@ if (argv.maxage || config.maxage) {
     maxage = argv.maxage || config.maxage;
 }
 
+var createOnly =  true;
+if (argv.f || argv.force) {
+    createOnly = false;
+}
 
 var packageJsonPath = path.join(process.cwd(), 'package.json');
 var packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
@@ -121,7 +125,7 @@ gulp.src('./dist/**/*')
 
     // publisher will add Content-Length, Content-Type and  headers specified above
     // If not specified it will set x-amz-acl to public-read by default
-    .pipe(publisher.publish(headers))
+    .pipe(publisher.publish(headers, { createOnly: createOnly }))
     .on('error', logError)
 
      // print upload updates to console
