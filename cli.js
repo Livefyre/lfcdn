@@ -46,7 +46,7 @@ if (argv.maxage || config.maxage) {
 var packageJsonPath = path.join(process.cwd(), 'package.json');
 var packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
 var name = packageJson.name;
-var version = packageJson.version;
+var version = argv.version || packageJson.version;
 
 if (argv.build || config.build) {
     build = (argv.build || config.build) + '';
