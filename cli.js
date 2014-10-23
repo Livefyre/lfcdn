@@ -42,9 +42,9 @@ if (argv.maxage || config.maxage) {
     maxage = argv.maxage || config.maxage;
 }
 
-var createOnly =  true;
-if (argv.f || argv.force) {
-    createOnly = false;
+var createOnly =  false;
+if (argv.co || argv.createOnly) {
+    createOnly = true;
 }
 
 var packageJsonPath = path.join(process.cwd(), 'package.json');

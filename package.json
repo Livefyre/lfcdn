@@ -13,7 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "gulp": "^3.6.1",
-    "gulp-awspublish": "git://github.com/zjjw/gulp-awspublish#create_only",
+    "gulp-awspublish": "^0.0.23",
     "gulp-rename": "^1.2.0",
     "minimist": "0.0.8",
     "semver": "^2.2.1"
