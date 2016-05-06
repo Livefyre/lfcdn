@@ -17,7 +17,9 @@ Note the `-g`. It will add `lfcdn` to your PATH.
 
 ## `lfcdn -h`
 
-    Usage: lfcdn -e {dev|qa|staging|prod} -c [/path/to/config.json]
+    Usage: lfcdn -e {dev|qa|staging|prod} -c [/path/to/config.json] [--reporter (url|none)]
+
+`--reporter urls` will print URLs to stdout for each file
 
 ## `lfcdn -c [/path/to/config.json]`
 
