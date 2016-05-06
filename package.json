@@ -1,6 +1,6 @@
 {
   "name": "lfcdn",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "",
   "main": "index.js",
   "bin": {
@@ -13,7 +13,7 @@
   "license": "MIT",
   "dependencies": {
     "gulp": "^3.6.1",
-    "gulp-awspublish": "^3.0.2",
+    "gulp-awspublish": "^0.0.23",
     "gulp-rename": "^1.2.0",
     "gulp-util": "^3.0.7",
     "minimist": "0.0.8",

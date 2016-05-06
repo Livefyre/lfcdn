@@ -83,11 +83,9 @@ if (env === 'prod') {
 }
 
 var publisher = awspublish.create({
-    accessKeyId: s3key,
-    secretAccessKey: s3secret,
-    params: {
-      Bucket: s3bucket
-    }
+    key: s3key,
+    secret: s3secret,
+    bucket: s3bucket
 });
 
 var headers = {
