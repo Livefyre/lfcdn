@@ -15,7 +15,7 @@ var s3secret = process.env.LF_CDN_S3_SECRET;
 var argv = require('minimist')(process.argv.slice(2));
 
 function usage() {
-    console.log('Usage: lfcdn -e {dev|qa|staging|prod} -c [/path/to/config.json]');
+    console.error('Usage: lfcdn -e {dev|qa|staging|prod} -c [/path/to/config.json] [--urls]');
 }
 
 // -h help
@@ -28,7 +28,7 @@ var maxage = '315360000';
 var build = false;
 
 if ( ! (s3key && s3secret)) {
-    console.log("Set LF_CDN_S3_KEY and LF_CDN_S3_SECRET");
+    console.error("Set LF_CDN_S3_KEY and LF_CDN_S3_SECRET");
     process.exit(1);
 }
 
@@ -65,7 +65,7 @@ if (argv.name || config.name) {
 }
 
 if ( ! (name && version)) {
-    console.log("Couldn't parse name and version from package.json");
+    console.error("Couldn't parse name and version from package.json");
     process.exit(1);
 }
 
@@ -75,26 +75,24 @@ if (['dev', 'qa', 'staging', 'prod'].indexOf(env) === -1) {
     process.exit(1);
 }
 
+var PROD_BUCKET = 'livefyre-cdn'
 if (env === 'prod') {
-    s3bucket = 'livefyre-cdn'
+    s3bucket = PROD_BUCKET;
 } else {
     s3bucket = 'livefyre-cdn-'+env;
 }
 
-console.log(s3bucket+": deploying "+name);
-
 var publisher = awspublish.create({
-    key: s3key,
-    secret: s3secret,
-    bucket: s3bucket
+    accessKeyId: s3key,
+    secretAccessKey: s3secret,
+    params: {
+      Bucket: s3bucket
+    }
 });
 
 var headers = {
     'Cache-Control': 'max-age={{maxage}}, no-transform, public'.replace('{{maxage}}', maxage)
 };
-
-console.log('config:', config);
-console.log('headers:', headers);
 
 if ( ! config.dir) {
     // S3 doesn't like `+` in it's keys, so we'll convert
@@ -109,6 +107,38 @@ if ( ! config.dir) {
 
 function logError(e) {
     console.log(e.message);
+}
+
+function s3Url(bucket, path) {
+    var protocol = 'https://';
+    var host;
+    if (bucket === PROD_BUCKET) {
+      host = 'cdn.livefyre.com/'
+    } else {
+      host = [bucket, '.s3.amazonaws.com/'].join('');
+    }
+    var url = [protocol, host, path].join('');
+    return url;
+}
+
+// --urls opts into a reporter that prints file URLs to stdout
+var reporter
+switch (argv.reporter) {
+    case 'urls':
+        reporter = require('./reporter')({
+          states: ['create', 'update', 'delete', 'skip'],
+          eachFile: function (file) {
+            var url = s3Url(s3bucket, file.s3.path)
+            console.log(url);
+          }
+        })
+        break;
+    case 'none':
+        reporter = require('./reporter')({});
+        break;
+    default:
+        reporter = awspublish.reporter();
+
 }
 
 gulp.src('./dist/**/*')
@@ -129,7 +159,7 @@ gulp.src('./dist/**/*')
     .on('error', logError)
 
      // print upload updates to console
-    .pipe(awspublish.reporter())
+    .pipe(reporter)
     .on('error', logError);
 
 // JJ: I am really sorry about this, but there is a rogue TCP error and I don't care where it is
