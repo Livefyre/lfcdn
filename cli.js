@@ -24,8 +24,9 @@ if (argv.h) {
     process.exit();
 }
 
-var maxage = '315360000';
 var build = false;
+var dir = null;
+var maxage = '315360000';
 
 if ( ! (s3key && s3secret)) {
     console.error("Set LF_CDN_S3_KEY and LF_CDN_S3_SECRET");
@@ -40,6 +41,10 @@ if (configPath) {
 
 if (argv.maxage || config.maxage) {
     maxage = argv.maxage || config.maxage;
+}
+
+if (argv.dir || config.dir) {
+    dir = argv.dir || config.dir;
 }
 
 var createOnly =  false;
@@ -92,7 +97,7 @@ var headers = {
     'Cache-Control': 'max-age={{maxage}}, no-transform, public'.replace('{{maxage}}', maxage)
 };
 
-if ( ! config.dir) {
+if ( ! dir) {
     // S3 doesn't like `+` in it's keys, so we'll convert
     // semvers with build fragments to /{version}/builds/{build}
     var packageSemver = semver(version);
@@ -100,7 +105,7 @@ if ( ! config.dir) {
     if (packageSemver.build.length) {
         s3path += '/builds/' + packageSemver.build.join('.');
     }
-    config.dir = s3path;
+    dir = s3path;
 }
 
 function logError(e) {
@@ -143,7 +148,7 @@ gulp.src('./dist/**/*')
     .on('error', logError)
 
     .pipe(rename(function (path) {
-        path.dirname = config.dir + '/' + path.dirname;
+        path.dirname = dir + '/' + path.dirname;
     }))
     .on('error', logError)
 
